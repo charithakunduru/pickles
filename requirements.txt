@@ -1,0 +1,25 @@
+# Core FastAPI Framework & ASGI Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+
+# Database & Migration Tools
+sqlalchemy>=2.0.28
+alembic>=1.13.1
+pymysql>=1.1.0
+
+# Data Validation & Configuration
+pydantic>=2.6.4
+pydantic-settings>=2.2.1
+python-dotenv>=1.0.1
+email-validator>=2.1.1
+
+# Security, Hashing & JWT Authentication
+pyjwt>=2.8.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.1.2
+
+# Form Handling & File Uploads (Product Images)
+python-multipart>=0.0.9
+
+# Utility & Image Handling
+pillow>=10.2.0
