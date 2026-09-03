@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv(override=True)
 
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:nohithareddy@localhost:3306/pickles_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:kushi@localhost:3306/pickles_db")
 
 connect_args = {}
 if "sqlite" in DATABASE_URL:
