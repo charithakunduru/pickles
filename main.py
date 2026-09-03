@@ -3,17 +3,18 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
 # 1. Load environment variables before importing application modules
-load_dotenv()
+load_dotenv(override=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# 2. Import database connection and models
+# 2. Import database connection, models, and routers
 from database.connection import engine, Base
 import models  # Registers SQLAlchemy models for metadata creation
+from routers import auth_router, user_router
 
 
-# 3. Modern FastAPI Lifespan Handler (Replaces deprecated @app.on_event)
+# 3. Modern FastAPI Lifespan Handler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Create tables if they don't exist
@@ -34,17 +35,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# 5. Add CORS Middleware for frontend integration (React, Vue, Mobile apps)
+# 5. Add CORS Middleware for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update with frontend domain in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# 6. Include API Routers
+app.include_router(auth_router)
+app.include_router(user_router)
 
-# 6. Base Health Check Endpoint
+
+# 7. Base Health Check Endpoint
 @app.get("/", tags=["Health Check"])
 def read_root():
     return {
