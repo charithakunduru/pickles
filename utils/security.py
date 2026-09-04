@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -9,6 +10,9 @@ from sqlalchemy.orm import Session
 from database.connection import get_db
 from models.user import User
 from enums.user_role import UserRole
+
+# Ensure environment variables are loaded
+load_dotenv(override=True)
 
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-this-in-production")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
