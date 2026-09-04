@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
+from models.user import User
+from utils.security import get_current_admin
 from typing import List, Optional
 from database.connection import get_db
 from schemas.product import ProductCreate, ProductResponse
@@ -14,8 +16,12 @@ from services.product_service import (
 
 router = APIRouter(prefix="/products", tags=["Pickle Products"])
 
-@router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
-def create_product(product_data: ProductCreate, db: Session = Depends(get_db)):
+@router.post("/",response_model=ProductResponse,status_code=status.HTTP_201_CREATED)
+def create_product(
+    product_data: ProductCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
     return create_product_service(db, product_data)
 
 @router.get("/", response_model=List[ProductResponse])
