@@ -22,7 +22,8 @@ class PickleProduct(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    variants = relationship("PickleVariant", back_populates="product", cascade="all, delete-orphan")
+    variants = relationship("PickleVariant", back_populates="product", cascade="all, delete-orphan", lazy="joined")
+    images = relationship("PickleProductImage", back_populates="product", cascade="all, delete-orphan", lazy="joined")
 
     def __repr__(self):
         return f"<PickleProduct(id={self.id}, name='{self.name}', category='{self.category}')>"
