@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # 2. Import database connection, models, and routers
 from database.connection import engine, Base
 import models  # Registers SQLAlchemy models for metadata creation
-from routers import auth_router, user_router, product_router
+from routers import auth_router, user_router, product_router, order_router
 
 
 # 3. Modern FastAPI Lifespan Handler
@@ -48,6 +48,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(product_router)
+app.include_router(order_router)
 
 
 # 7. Base Health Check Endpoint

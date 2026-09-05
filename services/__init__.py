@@ -6,6 +6,12 @@ from services.product_service import (
     get_product_by_slug,
     delete_product
 )
+from services.order_service import (
+    create_order,
+    get_user_orders,
+    get_order_by_id,
+    update_order_status
+)
 
 __all__ = [
     "register_user",
@@ -15,5 +21,9 @@ __all__ = [
     "get_all_products",
     "get_product_by_id",
     "get_product_by_slug",
-    "delete_product"
+    "delete_product",
+    "create_order",
+    "get_user_orders",
+    "get_order_by_id",
+    "update_order_status"
 ]
