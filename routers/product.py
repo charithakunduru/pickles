@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from models.user import User
-from utils.security import get_current_admin
+from utils.security import get_current_admin,get_current_user
 from typing import List, Optional
 from database.connection import get_db
 from schemas.product import ProductCreate, ProductUpdate, ProductResponse, VariantCreate, VariantUpdate, ProductImageCreate
@@ -31,15 +31,17 @@ def create_product(
     return create_product_service(db, product_data)
 
 @router.get("/", response_model=List[ProductResponse])
-def get_products(category: Optional[PickleCategory] = Query(None), db: Session = Depends(get_db)):
+def get_products(category: Optional[PickleCategory] = Query(None),
+                db: Session = Depends(get_db),
+                current_user: User = Depends(get_current_user)):
     return get_all_products_service(db, category=category)
 
 @router.get("/slug/{slug}", response_model=ProductResponse)
-def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
+def get_product_by_slug(slug: str, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
     return get_product_by_slug_service(db, slug)
 
 @router.get("/{product_id}", response_model=ProductResponse)
-def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
+def get_product_by_id(product_id: int, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
     return get_product_by_id_service(db, product_id)
 
 @router.post("/{product_id}/variants", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
