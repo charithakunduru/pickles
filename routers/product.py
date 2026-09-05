@@ -32,16 +32,15 @@ def create_product(
 
 @router.get("/", response_model=List[ProductResponse])
 def get_products(category: Optional[PickleCategory] = Query(None),
-                db: Session = Depends(get_db),
-                current_user: User = Depends(get_current_user)):
+                db: Session = Depends(get_db)):
     return get_all_products_service(db, category=category)
 
 @router.get("/slug/{slug}", response_model=ProductResponse)
-def get_product_by_slug(slug: str, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
+def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
     return get_product_by_slug_service(db, slug)
 
 @router.get("/{product_id}", response_model=ProductResponse)
-def get_product_by_id(product_id: int, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
+def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
     return get_product_by_id_service(db, product_id)
 
 @router.post("/{product_id}/variants", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,EmailStr
 from typing import List, Optional
 from datetime import datetime
 from enums import OrderStatus, PaymentStatus, PaymentMethod
@@ -12,6 +12,7 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     items: List[OrderItemCreate]
     payment_method: PaymentMethod = PaymentMethod.COD
+    customer_email: EmailStr
     shipping_address: Optional[DeliveryAddress] = None  # If null, uses user profile address
 
 
@@ -32,7 +33,8 @@ class OrderItemResponse(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     order_number: str
-    user_id: int
+    user_id: Optional[int]
+    customer_email: EmailStr
     total_amount: float
     status: OrderStatus
     payment_status: PaymentStatus
