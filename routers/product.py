@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from models.user import User
-from utils.security import get_current_admin
+from utils.security import get_current_admin,get_current_user
 from typing import List, Optional
 from database.connection import get_db
 from schemas.product import ProductCreate, ProductUpdate, ProductResponse, VariantCreate, VariantUpdate, ProductImageCreate
@@ -31,7 +31,8 @@ def create_product(
     return create_product_service(db, product_data)
 
 @router.get("/", response_model=List[ProductResponse])
-def get_products(category: Optional[PickleCategory] = Query(None), db: Session = Depends(get_db)):
+def get_products(category: Optional[PickleCategory] = Query(None),
+                db: Session = Depends(get_db)):
     return get_all_products_service(db, category=category)
 
 @router.get("/slug/{slug}", response_model=ProductResponse)

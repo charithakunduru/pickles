@@ -9,7 +9,8 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     order_number = Column(String(50), unique=True, index=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    customer_email = Column(String(150), nullable=True)
     
     total_amount = Column(Float, nullable=False)
     status = Column(SQLEnum(OrderStatus), default=OrderStatus.PENDING, nullable=False)

@@ -12,29 +12,42 @@ from enums import OrderStatus, PaymentStatus
 def generate_order_number() -> str:
     return f"PICKLE-{uuid.uuid4().hex[:8].upper()}"
 
-def create_order(db: Session, user: User, order_data: OrderCreate) -> Order:
+def create_order(db: Session, order_data: OrderCreate, user: User = None) -> Order:
     # 1. Validate shipping address
     address = order_data.shipping_address
-    
-    shipping_first_name = address.first_name if (address and address.first_name) else user.first_name
-    shipping_last_name = address.last_name if address else user.last_name
-    shipping_street_address = address.street_address if address else user.street_address
-    shipping_apartment = address.apartment if address else user.apartment
-    shipping_town_city = address.town_city if address else user.town_city
-    shipping_state = address.state if address else user.state
-    shipping_pin_code = address.pin_code if address else user.pin_code
-    shipping_phone = address.phone if address else user.phone
+
+    if address:
+        shipping_first_name = address.first_name
+        shipping_last_name = address.last_name
+        shipping_street_address = address.street_address
+        shipping_apartment = address.apartment
+        shipping_town_city = address.town_city
+        shipping_state = address.state
+        shipping_pin_code = address.pin_code
+        shipping_phone = address.phone
+
+    elif user:
+        # Logged-in user: use saved profile address
+        shipping_first_name = user.first_name
+        shipping_last_name = user.last_name
+        shipping_street_address = user.street_address
+        shipping_apartment = user.apartment
+        shipping_town_city = user.town_city
+        shipping_state = user.state
+        shipping_pin_code = user.pin_code
+        shipping_phone = user.phone
+
+    else:
+        # Guest checkout must provide shipping address
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Shipping address is required for guest checkout."
+        )
 
     if not shipping_street_address or not shipping_town_city or not shipping_pin_code or not shipping_phone:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incomplete shipping address. Please provide address details in request or update user profile address."
-        )
-
-    if not order_data.items:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Order must contain at least one item."
+            detail="Incomplete shipping address. Please provide all required address details."
         )
 
     # 2. Process items, validate product & variant IDs, check stock & calculate total
@@ -99,7 +112,8 @@ def create_order(db: Session, user: User, order_data: OrderCreate) -> Order:
     # 3. Create Order Parent Record
     new_order = Order(
         order_number=generate_order_number(),
-        user_id=user.id,
+        customer_email=order_data.customer_email,
+        user_id=user.id if user else None,
         total_amount=grand_total,
         status=OrderStatus.PENDING,
         payment_status=PaymentStatus.PENDING,
@@ -115,8 +129,7 @@ def create_order(db: Session, user: User, order_data: OrderCreate) -> Order:
     )
 
     db.add(new_order)
-    db.commit()
-    db.refresh(new_order)
+    db.flush()
 
     # 4. Create OrderItems
     for item in order_items_to_create:

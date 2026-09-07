@@ -5,7 +5,11 @@ from database.connection import get_db
 from models.user import User
 from schemas.order import OrderCreate, OrderResponse
 from enums import OrderStatus
-from utils.security import get_current_user, get_current_admin
+from utils.security import (
+    get_current_user,
+    get_current_admin,
+    get_optional_current_user
+)
 from services.order_service import (
     create_order as create_order_service,
     get_user_orders as get_user_orders_service,
@@ -18,10 +22,10 @@ router = APIRouter(prefix="/orders", tags=["Orders & Checkout"])
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 def place_order(
     order_data: OrderCreate,
-    current_user: User = Depends(get_current_user),
+    user: User | None = Depends(get_optional_current_user),
     db: Session = Depends(get_db)
 ):
-    return create_order_service(db, current_user, order_data)
+    return create_order_service(db, order_data, user)
 
 @router.get("/my-orders", response_model=List[OrderResponse])
 def get_my_orders(
